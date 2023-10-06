@@ -99,6 +99,7 @@ train_dataset.head()
 suspects.head()
 
 feature_names = ['tier', 'gender', 'following_rate', 'followers_avg_age', 'following_avg_age', 'max_repetitive_punc', 'num_of_hashtags_per_action', 'emoji_count_per_action', 'punctuations_per_action', 'number_of_words_per_action', 'avgCompletion', 'avgTimeSpent', 'avgDuration', 'avgComments', 'creations', 'content_views', 'num_of_comments', 'weekends_trails_watched_per_day', 'weekdays_trails_watched_per_day', 'slot1_trails_watched_per_day', 'slot2_trails_watched_per_day', 'slot3_trails_watched_per_day', 'slot4_trails_watched_per_day', 'avgt2'] #independent variables
+print(len(feature_names))
 target_name = ['age'] #dependent variable
 
 # features by convention are called X, target by convention is called y :
@@ -117,6 +118,13 @@ print(train_dataset.shape)
 print(len(X_train)) #(it is !)
 print(len(X_test)) # also correct
 
+# Use the MinMaxScaller to rescale your the features in X_train and X_test
+from sklearn.preprocessing import MinMaxScaler
+
+mmscaler = MinMaxScaler()
+X_train = mmscaler.fit_transform(X_train)
+X_test = mmscaler.transform(X_test)
+
 """#Here we could add one hot encoding, what do you think ?
 
 ##Linear regression
@@ -128,22 +136,22 @@ from sklearn.linear_model import LinearRegression
 from sklearn.metrics import mean_absolute_error, r2_score
 
 # create the model
-model = LinearRegression()
+linear_model = LinearRegression()
 
 # Fit (train) the model
-model.fit(X_train, y_train)
+linear_model.fit(X_train, y_train)
 
 """and we do the predictions on the test set:"""
 
 #we want to predct y on the test set
-predicted_y = model.predict(X_test)
+predicted_ages = linear_model.predict(X_test)
 
 # if we wann check visually the accuracy just print the predicted y and the actual y_test and compare them :
 #print(y_test)
-#print(predicted_y)
+#print(predicted_ages)
 
 #if i want to check numerically the accuracy of the values :
-model.score(X_test, y_test)
+linear_model.score(X_test, y_test)
 
 #result is 66% so not that good but not that bad but that explains why the y_test and predicted_y are not so similar tho
 
@@ -151,11 +159,11 @@ model.score(X_test, y_test)
 
 #mae needs to be small
 #https://www.sciencedirect.com/topics/engineering/mean-absolute-error
-mae = mean_absolute_error(y_test, predicted_y)
+mae = mean_absolute_error(y_test, predicted_ages)
 print("MAE :", mae)
 
 #the more r2 is next to 1, the more accurate my model is
-r2 = r2_score(y_test, predicted_y)
+r2 = r2_score(y_test, predicted_ages)
 print("R^2 :", r2)
 
 """## Retraining on the full dataset
@@ -176,13 +184,13 @@ print(columns_only_in_train_dataset)
 suspects_features = suspects[feature_names]
 
 # create the new model
-new_model = LinearRegression()
+new_linear_model = LinearRegression()
 
 # Fit the new model
-new_model.fit(X, y)
+new_linear_model.fit(X, y)
 
 # Make the predictions
-suspects['predicted_age'] = new_model.predict(suspects_features)
+suspects['predicted_age'] = new_linear_model.predict(suspects_features)
 
 """## Which suspects remain after identifying users between 25 and 35 years old ?"""
 
@@ -192,3 +200,51 @@ print(filtered_suspects.shape)
 
 # import statistics as stat
 # stat.mean(filtered_suspects['predicted_age'])
+
+"""## 1.3 What is the predicted age of a Male user with the following characteristics:
+* tier = 2
+* following_rate = 2
+* followers_avg_age = 27
+* following_avg_age = 22
+* max_repetitive_punc = 0.06
+* num_of_hashtags_per_action = 0.8
+* emoji_count_per_action = 0.3
+* punctuations_per_action = 0.03
+* number_of_words_per_action = 7
+* avgCompletion = 12
+* avgTimeSpent = 0.13
+* avgDuration = 0.8
+* avgComments = 0.04
+* likeToDislikeRation = 0.76
+* creations = 10
+* content_views = 65
+* num_of_comments = 12
+* weekends_trails_watched_per_day = 0
+* weekdays_trails_watched_per_day = 0.00353
+* slot1_trails_watched_per_day = 0.032
+* slot2_trails_watched_per_day = 0
+* slot3_trails_watched_per_day = 0.004
+* slot4_trails_watched_per_day = 2
+* avgt2 = 39
+
+*hint: make sure the features and their order corresponds to the ones used for the training.*
+
+*hint 2: don't forget to reprocess the data as you did before*
+"""
+
+# I used the following code to ajust the features
+suspect_to_test_features = ["tier", "following_rate", "followers_avg_age", "following_avg_age", "max_repetitive_punc", "num_of_hashtags_per_action", "emoji_count_per_action", "punctuations_per_action", "number_of_words_per_action", "avgCompletion", "avgTimeSpent", "avgDuration", "avgComments", "likeToDislikeRation","creations", "content_views", "num_of_comments", "weekends_trails_watched_per_day", "weekdays_trails_watched_per_day", "slot1_trails_watched_per_day", "slot2_trails_watched_per_day", "slot3_trails_watched_per_day", "slot4_trails_watched_per_day", "avgt2"]
+features_missing = set(feature_names) - set(suspect_to_test_features)
+features_extra = set(suspect_to_test_features) - set(feature_names)
+print("extra features : ", features_extra, " & missing features : ", features_missing)
+
+##############################
+# i removed first, by hand, the extra feature and added the gender feature in the same order as in the model (2nd position)
+
+suspect_to_test_features = ["tier", "gender", "following_rate", "followers_avg_age", "following_avg_age", "max_repetitive_punc", "num_of_hashtags_per_action", "emoji_count_per_action", "punctuations_per_action", "number_of_words_per_action", "avgCompletion", "avgTimeSpent", "avgDuration", "avgComments", "creations", "content_views", "num_of_comments", "weekends_trails_watched_per_day", "weekdays_trails_watched_per_day", "slot1_trails_watched_per_day", "slot2_trails_watched_per_day", "slot3_trails_watched_per_day", "slot4_trails_watched_per_day", "avgt2"]
+suspect_to_test_data = [2, 1, 2, 27, 22, 0.06, 0.8, 0.3, 0.03, 7, 12, 0.13, 0.8, 0.04, 10, 65, 12, 0, 0.00353, 0.032, 0, 0.004, 2, 39]
+
+suspect_to_test = pd.DataFrame([suspect_to_test_data], columns=suspect_to_test_features)
+suspect_to_test["predicted_age"] = new_linear_model.predict(suspect_to_test)
+
+print(suspect_to_test["predicted_age"])
