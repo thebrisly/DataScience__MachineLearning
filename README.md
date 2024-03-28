@@ -9,25 +9,26 @@ During the course, I delved into both supervised and unsupervised learning techn
 
 ### Supervised Learning
 
-Linear Regression
-Logistic Regression
-Decision Trees
-Support Vector Machines
-Neural Networks
+- Linear Regression
+- Logistic Regression
+- Decision Trees
+- Support Vector Machines
+- Neural Networks
 
 ### Unsupervised Learning
 
-K-means Clustering
-Hierarchical Clustering
-Principal Component Analysis (PCA)
-t-Distributed Stochastic Neighbor Embedding (t-SNE)
+- K-means Clustering
+- KNN
+- Hierarchical Clustering
+- Principal Component Analysis (PCA)
+- t-Distributed Stochastic Neighbor Embedding (t-SNE)
 
 ### Additional Topics
 Beyond supervised and unsupervised learning, the course also touched upon various other essential concepts in data science and machine learning, such as:
 
-Model Evaluation and Validation
-Dimensionality Reduction
-Natural Language Processing (NLP)
+- Model Evaluation and Validation
+- Dimensionality Reduction
+- Natural Language Processing (NLP)
 
 ## Practical Experience
 
